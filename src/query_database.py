@@ -1,5 +1,7 @@
 import sqlite3
+import pandas as pd
 from pathlib import Path
+import plotly.express as px
 
 
 DATABASE_FILE = Path("data/processed/energy.db")
@@ -9,22 +11,87 @@ connection = sqlite3.connect(DATABASE_FILE)
 
 cursor = connection.cursor()
 
+
 query = """
 SELECT
-    fuel_type,
-    SUM(output_mwh) AS total_generation
+    DATE(timestamp) AS date,
+
+    SUM(CASE
+        WHEN generation_type = 'Nuclear'
+        THEN output_mwh
+        ELSE 0
+    END) AS nuclear_generation,
+
+    SUM(CASE
+        WHEN generation_type = 'Renewable'
+        THEN output_mwh
+        ELSE 0
+    END) AS renewable_generation
+
 FROM generation
-GROUP BY fuel_type
-ORDER BY total_generation DESC;
+
+GROUP BY DATE(timestamp)
+
+ORDER BY date;
 """
 
 cursor.execute(query)
 
 rows = cursor.fetchall()
 
-print("\nFirst 10 rows from SQL:")
+df = pd.DataFrame(
+    rows,
+    columns=["date", "nuclear_generation", "renewable_generation"]
+)
 
-for row in rows:
+df["date"] = pd.to_datetime(df["date"])
+
+print("\nData types:")
+print(df.dtypes)
+
+print("\nFirst 10 rows from SQL:")
+print(df.head(10))
+
+import plotly.express as px
+
+fig = px.line(
+    df,
+    x="date",
+    y=["nuclear_generation", "renewable_generation"],
+    title="Ontario Electricity Generation: Nuclear vs Renewable",
+    labels={
+        "date": "Date",
+        "value": "Generation (MWh)",
+        "variable": "Generation Type"
+    }
+)
+
+fig.update_layout(
+    xaxis_title="Date",
+    yaxis_title="Generation (MWh)",
+    legend_title="Generation Type",
+    hovermode="x unified"
+)
+
+fig.show()
+
+comparison_query = """
+SELECT
+    generation_type,
+    ROUND(AVG(output_mwh), 2) AS average_generation,
+    MIN(output_mwh) AS minimum_generation,
+    MAX(output_mwh) AS maximum_generation
+FROM generation
+WHERE generation_type IN ('Nuclear', 'Renewable')
+GROUP BY generation_type;
+"""
+
+cursor.execute(comparison_query)
+
+comparison_rows = cursor.fetchall()
+
+print("\nGeneration variability:")
+for row in comparison_rows:
     print(row)
 
 connection.close()

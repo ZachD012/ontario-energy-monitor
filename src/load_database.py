@@ -23,6 +23,33 @@ def create_database():
 
     print(f"Records loaded into DataFrame: {len(df)}")
 
+    def classify_fuel(fuel):
+
+        if fuel == "NUCLEAR":
+            return "Nuclear"
+
+        if fuel in ["HYDRO", "WIND", "SOLAR", "BIOFUEL"]:
+            return "Renewable"
+
+        if fuel == "GAS":
+            return "Fossil"
+
+        return "Other"
+
+    df["generation_type"] = df["fuel_type"].apply(
+        classify_fuel
+    )
+
+    df["timestamp"] = pd.to_datetime(
+        df["day"]
+    ) + pd.to_timedelta(
+         df["hour"] - 1,
+        unit="h"
+    )
+
+    print("\nColumns being loaded into database:")
+    print(df.columns.tolist())
+
     connection = sqlite3.connect(DATABASE_FILE)
 
     df.to_sql(
