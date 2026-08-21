@@ -4,6 +4,10 @@ A data analytics and visualization project using publicly available electricity 
 
 Ontario Energy Monitor downloads, parses, validates, and analyzes hourly Ontario electricity generation data using **Python, SQL, and SQLite**, then presents the results through an interactive **Streamlit and Plotly dashboard**.
 
+## Dashboard Preview
+
+![Ontario Energy Monitor Dashboard](assets/dashboard.png)
+
 ## Project Overview
 
 The project analyzes Ontario's electricity generation mix with a focus on nuclear and renewable generation.

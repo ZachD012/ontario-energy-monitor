@@ -1,8 +1,9 @@
 # Generated IESO data
 data/raw/*.xml
 
-# Generated SQLite database
-data/processed/*.db
+# Keep the processed SQLite database
+!data/processed/
+!data/processed/energy.db
 
 # Python cache
 __pycache__/
