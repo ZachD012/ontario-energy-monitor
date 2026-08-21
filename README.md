@@ -4,9 +4,9 @@ A data analytics and visualization project using publicly available electricity 
 
 Ontario Energy Monitor downloads, parses, validates, and analyzes hourly Ontario electricity generation data using **Python, SQL, and SQLite**, then presents the results through an interactive **Streamlit and Plotly dashboard**.
 
-## Dashboard Preview
+## Live Dashboard
 
-![Ontario Energy Monitor Dashboard](assets/dashboard.png)
+[View the Ontario Energy Monitor Dashboard](https://ontario-energy-monitor-5e68pj85u299p6qdpmlegj.streamlit.app/)
 
 ## Project Overview
 
