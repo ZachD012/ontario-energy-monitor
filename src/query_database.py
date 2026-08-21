@@ -94,4 +94,91 @@ print("\nGeneration variability:")
 for row in comparison_rows:
     print(row)
 
+relative_output_query = """
+WITH hourly_generation AS (
+
+    SELECT
+        timestamp,
+        generation_type,
+        SUM(output_mwh) AS hourly_output
+
+    FROM generation
+
+    WHERE generation_type IN ('Nuclear', 'Renewable')
+
+    GROUP BY timestamp, generation_type
+),
+
+maximums AS (
+
+    SELECT
+        generation_type,
+        MAX(hourly_output) AS maximum_output
+
+    FROM hourly_generation
+
+    GROUP BY generation_type
+)
+
+SELECT
+    hourly_generation.timestamp,
+    hourly_generation.generation_type,
+    hourly_generation.hourly_output,
+    maximums.maximum_output,
+
+    ROUND(
+        hourly_generation.hourly_output * 100.0
+        / maximums.maximum_output,
+        2
+    ) AS percent_of_maximum
+
+FROM hourly_generation
+
+JOIN maximums
+    ON hourly_generation.generation_type = maximums.generation_type
+
+ORDER BY hourly_generation.timestamp;
+"""
+
+cursor.execute(relative_output_query)
+
+relative_output_rows = cursor.fetchall()
+
+relative_df = pd.DataFrame(
+    relative_output_rows,
+    columns=[
+        "timestamp",
+        "generation_type",
+        "total_output",
+        "maximum_output",
+        "percent_of_maximum"
+    ]
+)
+
+relative_df["timestamp"] = pd.to_datetime(
+    relative_df["timestamp"]
+)
+
+print("\nRelative output DataFrame:")
+print(relative_df.head(10))
+
+fig2 = px.line(
+    relative_df,
+    x="timestamp",
+    y="percent_of_maximum",
+    color="generation_type",
+    title="Generation as Percentage of Observed Maximum",
+    labels={
+        "timestamp": "Time",
+        "percent_of_maximum": "Output (% of Observed Maximum)",
+        "generation_type": "Generation Type"
+    }
+)
+
+fig2.update_layout(
+    hovermode="x unified"
+)
+
+fig2.show()
+
 connection.close()

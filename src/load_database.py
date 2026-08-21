@@ -10,6 +10,30 @@ XML_FILE = Path("data/raw/generation.xml")
 DATABASE_FILE = Path("data/processed/energy.db")
 
 
+def validate_data(df):
+
+    print("\nValidating data...")
+
+    if df.empty:
+        raise ValueError("Validation failed: DataFrame is empty.")
+
+    if df["timestamp"].isna().any():
+        raise ValueError("Validation failed: Missing timestamps found.")
+
+    if df["output_mwh"].isna().all():
+        raise ValueError("Validation failed: No generation output values found.")
+
+    minimum_records = 10000
+
+    if len(df) < minimum_records:
+        raise ValueError(
+            f"Validation failed: Only {len(df):,} records found. "
+            f"Expected at least {minimum_records:,}."
+        )
+
+    print("Data validation passed.")
+
+
 def create_database():
 
     DATABASE_FILE.parent.mkdir(
@@ -46,6 +70,8 @@ def create_database():
          df["hour"] - 1,
         unit="h"
     )
+
+    validate_data(df)
 
     print("\nColumns being loaded into database:")
     print(df.columns.tolist())

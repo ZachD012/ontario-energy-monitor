@@ -54,9 +54,12 @@ def parse_generation_data(file_path):
                 if output_element is not None and output_element.text:
                     output_mwh = int(output_element.text)
 
-                quality_element = energy_element.find(
-                    f"{NAMESPACE}OutputQuality"
-                )
+                quality_element = None
+
+                if energy_element is not None:
+                    quality_element = energy_element.find(
+                        f"{NAMESPACE}OutputQuality"
+                    )
 
                 output_quality = None
 

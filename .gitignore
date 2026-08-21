@@ -1,0 +1,16 @@
+# Generated IESO data
+data/raw/*.xml
+
+# Generated SQLite database
+data/processed/*.db
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+venv/
+.venv/
+
+# Streamlit
+.streamlit/secrets.toml
