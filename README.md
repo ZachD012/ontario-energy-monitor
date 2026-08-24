@@ -46,13 +46,13 @@ Python · pandas · requests · XML · SQLite · SQL · Plotly · Streamlit · G
 
 The pipeline is divided into several stages:
 
-**Ingestion** — `fetch_ieso_generation.py` downloads the latest IESO XML data.
+**Ingestion** — `fetch_ieso_[data].py` & downloads the latest IESO XML data.
 
-**Parsing** — `parse_ieso_generation.py` extracts date, hour, fuel type, generation output, and output quality from the XML.
+**Parsing** — `parse_ieso_[data].py` extracts the data's information from the XML.
 
-**Transformation & Validation** — `load_database.py` classifies generation sources as Nuclear, Renewable, Fossil, or Other, creates timestamps, and validates the dataset.
+**Transformation & Validation** — `load_database.py` classifies generation sources as Nuclear, Renewable, Fossil, or Other, creates timestamps, loads generation data, and validates the dataset.
 
-**Database** — Transformed data is stored in a SQLite `generation` table.
+**Database** — Transformed data is stored in a SQLite `generation` and `demand` table.
 
 **Updates** — `update_data.py` runs the complete pipeline to download, process, validate, and rebuild the database.
 
@@ -110,6 +110,8 @@ ontario-energy-monitor/
 ├── src/
 │   ├── fetch_ieso_generation.py
 │   ├── parse_ieso_generation.py
+│   ├── fetch_ieso_demand.py
+│   ├── parse_ieso_demand.py
 │   ├── load_database.py
 │   ├── query_database.py
 │   ├── analyze_generation.py
@@ -156,9 +158,8 @@ streamlit run src/dashboard.py
 
 ## Future Improvements
 
-- Public dashboard deployment
 - Additional IESO datasets
-- Electricity demand analysis
+- Add more provinces
 - Additional energy-market metrics
 - Improved monitoring of automated updates
 - Cloud-based data pipeline
