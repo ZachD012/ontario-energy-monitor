@@ -89,11 +89,8 @@ st.markdown(
     /* Major KPI cards */
     .major-kpi {{
         padding: 24px;
-        border-radius: 12px;
         margin-bottom: 18px;
-        text-align: center;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        background-color: {DARK_OLIVE};
+        text-align: left;
     }}
 
     .major-kpi-mwh {{
@@ -116,27 +113,29 @@ st.markdown(
         color: {LIGHT_TEXT};
     }}
 
-    .major-kpi-description {{
-        font-size: 14px;
-        opacity: 0.8;
-    }}
-
     .low-carbon {{
         color: {YELLOW};
+    }}
+
+    .major-kpi.low-carbon {{
+        border-bottom: 2px solid;
+        border-image: linear-gradient(to right, {YELLOW}, {GOLD}) 1;
     }}
 
     .fossil-other {{
         color: {AFTERNOON};
     }}
 
+    .major-kpi.fossil-other {{
+        border-bottom: 2px solid;
+        border-image: linear-gradient(to right, {AFTERNOON}, {LIGHT_GREY}) 1;
+    }}
+
     /* Smaller KPI cards */
     .minor-kpi {{
-        background-color: {DARK_OLIVE};
         padding: 16px;
-        border-radius: 10px;
-        text-align: center;
+        text-align: left;
         margin-bottom: 25px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
     }}
 
     .minor-kpi-mwh {{
@@ -151,6 +150,22 @@ st.markdown(
         font-size: 13px;
         font-weight: 700;
         letter-spacing: 1px;
+    }}
+
+    .nuclear {{
+        color: {YELLOW};
+    }}
+
+    .renewable {{
+        color: {GOLD};
+    }}
+
+    .fossil {{
+        color: {AFTERNOON};
+    }}
+
+    .other {{
+        color: {LIGHT_GREY};
     }}
 
     .minor-kpi-value {{
@@ -999,9 +1014,9 @@ average_generation = dict(
 
 st.subheader("Generation Overview")
 
-# Major generation categories
+# Major and Minor generation categories
 
-kpiMjr_col1, kpiMjr_col2,  = st.columns(2)
+kpiMjr_col1, kpiMjr_col2,  = st.columns(2, gap="xxlarge")
 
 
 with kpiMjr_col1:
@@ -1016,13 +1031,52 @@ with kpiMjr_col1:
             <div class="major-kpi-mwh">
                 {format_mwh(metrics['low_carbon_mwh'])}
             </div>
-            <div class="major-kpi-description">
-                Nuclear + Renewable
-            </div>
         </div>
         """,
         unsafe_allow_html=True
     )
+
+    kpiMin_col1, kpiMin_col2 = st.columns(2)
+
+    with kpiMin_col1:
+
+        st.markdown(
+            f"""
+            <div class="minor-kpi">
+                <div class="minor-kpi-title nuclear">NUCLEAR</div>
+                <div class="minor-kpi-value">
+                    {metrics['nuclear']}%
+                </div>
+                <div class="minor-kpi-mwh">
+                    {format_mwh(metrics['nuclear_mwh'])}
+                </div>
+                <div class="minor-kpi-average">
+                    Avg. {average_generation['Nuclear']:,.0f} MW
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with kpiMin_col2:
+
+        st.markdown(
+            f"""
+            <div class="minor-kpi">
+                <div class="minor-kpi-title renewable">RENEWABLE</div>
+                <div class="minor-kpi-value">
+                    {metrics['renewable']}%
+                </div>
+                <div class="minor-kpi-mwh">
+                    {format_mwh(metrics['renewable_mwh'])}
+                </div>
+                <div class="minor-kpi-average">
+                    Avg. {average_generation['Renewable']:,.0f} MW
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 
 with kpiMjr_col2:
@@ -1037,97 +1091,52 @@ with kpiMjr_col2:
             <div class="major-kpi-mwh">
                 {format_mwh(metrics['fossil_other_mwh'])}
             </div>
-            <div class="major-kpi-description">
-                Gas + Other
-            </div>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-# Individual generation sources
-kpiMin_col1, kpiMin_col2, kpiMin_col3, kpiMin_col4 = st.columns(4)
+    kpiMin_col3, kpiMin_col4 = st.columns(2)
+    
+    with kpiMin_col3:
 
-with kpiMin_col1:
+        st.markdown(
+            f"""
+            <div class="minor-kpi">
+                <div class="minor-kpi-title fossil">GAS</div>
+                <div class="minor-kpi-value">
+                    {metrics['fossil']}%
+                </div>
+                <div class="minor-kpi-mwh">
+                    {format_mwh(metrics['fossil_mwh'])}
+                </div>
+                <div class="minor-kpi-average">
+                    Avg. {average_generation['Fossil']:,.0f} MW
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-    st.markdown(
-        f"""
-        <div class="minor-kpi nuclear">
-            <div class="minor-kpi-title low-carbon">NUCLEAR</div>
-            <div class="minor-kpi-value">
-                {metrics['nuclear']}%
-            </div>
-            <div class="minor-kpi-mwh">
-                {format_mwh(metrics['nuclear_mwh'])}
-            </div>
-            <div class="minor-kpi-average">
-                Avg. {average_generation['Nuclear']:,.0f} MW
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    with kpiMin_col4:
 
-with kpiMin_col2:
-
-    st.markdown(
-        f"""
-        <div class="minor-kpi renewable">
-            <div class="minor-kpi-title low-carbon">RENEWABLE</div>
-            <div class="minor-kpi-value">
-                {metrics['renewable']}%
+        st.markdown(
+            f"""
+            <div class="minor-kpi">
+                <div class="minor-kpi-title other">OTHER</div>
+                <div class="minor-kpi-value">
+                    {metrics['other']}%
+                </div>
+                <div class="minor-kpi-mwh">
+                    {format_mwh(metrics['other_mwh'])}
+                </div>
+                <div class="minor-kpi-average">
+                    Avg. {average_generation['Other']:,.0f} MW
+                </div>
             </div>
-            <div class="minor-kpi-mwh">
-                {format_mwh(metrics['renewable_mwh'])}
-            </div>
-            <div class="minor-kpi-average">
-                Avg. {average_generation['Renewable']:,.0f} MW
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-with kpiMin_col3:
-
-    st.markdown(
-        f"""
-        <div class="minor-kpi fossil">
-            <div class="minor-kpi-title fossil-other">GAS</div>
-            <div class="minor-kpi-value">
-                {metrics['fossil']}%
-            </div>
-            <div class="minor-kpi-mwh">
-                {format_mwh(metrics['fossil_mwh'])}
-            </div>
-            <div class="minor-kpi-average">
-                Avg. {average_generation['Fossil']:,.0f} MW
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-with kpiMin_col4:
-
-    st.markdown(
-        f"""
-        <div class="minor-kpi other">
-            <div class="minor-kpi-title fossil-other">OTHER</div>
-            <div class="minor-kpi-value">
-                {metrics['other']}%
-            </div>
-            <div class="minor-kpi-mwh">
-                {format_mwh(metrics['other_mwh'])}
-            </div>
-            <div class="minor-kpi-average">
-                Avg. {average_generation['Other']:,.0f} MW
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
+            """,
+            unsafe_allow_html=True
+        )
 
 # ============================================================
 # DEMAND

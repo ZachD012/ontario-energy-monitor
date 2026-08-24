@@ -26,17 +26,21 @@ jobs:
         run: |
           python src/update_data.py
 
+      - name: Check for database changes
+        id: changes
+        run: |
+          if git diff --quiet -- data/processed/energy.db; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Commit updated database
+        if: steps.changes.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
           git add data/processed/energy.db
+          git commit -m "Update IESO energy data"
+          git push
 
-          if git diff --cached --quiet; then
-            echo "No database changes detected."
-          else
-            git commit -m "Update IESO energy data"
-            git push
-          fi
-```
